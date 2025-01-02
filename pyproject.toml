@@ -6,28 +6,8 @@ authors = [
   {name = "Lukas Gysin", email = "lukas.gysin@students.fhnw.ch"},
 ]
 dependencies = [
-    # --------- data & analysis -------- #
-    "pandas",
-    "numpy",
-    # --------- visualize -------- #
-    "matplotlib",
-    # --------- machine learning --------- #
-    "scikit-learn",
+    "Pillow",
     "torch",
-    "torchvision",
-    "torchmetrics",
-    "torchshow",
-    "torchinfo",
-    "lightning",
-    "transformers",
-    # --------- Experiment Tracking --------- #
-    "tensorboard",
-    # --------- juypter --------- #
-    "jupyter",
-    "ipykernel",
-    "ipywidgets",
-    # --------- Utilities --------- #
-    "tqdm",
 ]
 
 [build-system]
