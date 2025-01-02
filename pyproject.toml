@@ -1,0 +1,38 @@
+[project]
+name = "geoguesser"
+version = "0.1.0"
+authors = [
+  {name = "Julian Steinacher", email = "julian.steinacher@students.fhnw.ch"},
+  {name = "Lukas Gysin", email = "lukas.gysin@students.fhnw.ch"},
+]
+dependencies = [
+    # --------- data & analysis -------- #
+    "pandas",
+    "numpy",
+    # --------- visualize -------- #
+    "matplotlib",
+    # --------- machine learning --------- #
+    "scikit-learn",
+    "torch",
+    "torchvision",
+    "torchmetrics",
+    "torchshow",
+    "torchinfo",
+    "lightning",
+    "transformers",
+    # --------- Experiment Tracking --------- #
+    "tensorboard",
+    # --------- juypter --------- #
+    "jupyter",
+    "ipykernel",
+    "ipywidgets",
+    # --------- Utilities --------- #
+    "tqdm",
+]
+
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
