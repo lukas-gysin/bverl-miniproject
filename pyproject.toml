@@ -7,6 +7,7 @@ authors = [
 ]
 dependencies = [
     "Pillow",
+    "tifffile",
     "torch",
 ]
 
