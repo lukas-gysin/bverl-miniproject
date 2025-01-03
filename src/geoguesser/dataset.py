@@ -9,6 +9,7 @@ import zipfile
 # Third Party Libraries
 from PIL import Image
 import tifffile
+import torch
 from torch.utils.data import Dataset
 from torchvision import transforms
 
