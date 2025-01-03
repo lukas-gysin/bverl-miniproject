@@ -10,6 +10,7 @@ import zipfile
 from PIL import Image
 import tifffile
 from torch.utils.data import Dataset
+from torchvision import transforms
 
 class EuroSATDataset(Dataset):
   def __init__(self, root_dir, transform: Callable | None = None,):
