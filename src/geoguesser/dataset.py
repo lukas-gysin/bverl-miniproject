@@ -42,7 +42,12 @@ class EuroSATDataset(Dataset):
 
     # Normalize each channel
     for channel in range(image.shape[0]):
-      image[channel] = (image[channel] - image[channel].min()) / (image[channel].max() - image[channel].min())
+      channel_min = image[channel].min()
+      channel_max = image[channel].max()
+      if channel_max != channel_min:
+          image[channel] = (image[channel] - channel_min) / (channel_max - channel_min)
+      else:
+          image[channel] = torch.zeros_like(image[channel])  # Set to zero if uniform
 
     label = self.observations[idx]["label"]
     label_num = self.classes.index(label)
@@ -59,7 +64,7 @@ class EuroSATDataset(Dataset):
     else:
       # Multi-spectral dataset selected
       url = 'https://zenodo.org/records/7711810/files/EuroSAT_MS.zip?download=1'
-    
+
     save_path = download_dir / f'{dataset}.zip'
     extract_path = download_dir / f'{dataset}/'
 
