@@ -8,10 +8,34 @@ import zipfile
 
 # Third Party Libraries
 from PIL import Image
+from sklearn.model_selection import train_test_split
 import tifffile
 import torch
 from torch.utils.data import Dataset
 from torchvision import transforms
+
+
+class EuroSATDataloader:
+  def __init__(self, dataset: EuroSATDataset, seed):
+    self.dataset = dataset
+
+    ids = [idx for idx in range(0, len(dataset.observations))]
+    labels = [observation["label"] for observation in dataset.observations]
+    
+    self.train_ids, self.test_ids = train_test_split(ids, train_size=0.8,  random_state=seed, stratify=labels)
+    self.val_ids, self.test_ids = train_test_split(self.test_ids, train_size=0.5,  random_state=seed, stratify=[labels[i] for i in self.test_ids])
+  
+  def testing(self, transformer: Callable | None = None):
+    dataset_test = EuroSATDataset.from_subset(self.dataset, self.test_ids, transform=transformer)
+    return DataLoader(dataset_test, batch_size=16, shuffle=False, num_workers=os.cpu_count())
+
+  def training(self, transformer: Callable | None = None):
+    dataset_train = EuroSATDataset.from_subset(self.dataset, self.train_ids, transform=transformer)
+    return DataLoader(dataset_train, batch_size=16, shuffle=True, num_workers=os.cpu_count())
+  
+  def validation(self, transformer: Callable | None = None):
+    dataset_val = EuroSATDataset.from_subset(self.dataset, self.val_ids, transform=transformer)
+    return DataLoader(dataset_val, batch_size=16, shuffle=False, num_workers=os.cpu_count())
 
 class EuroSATDataset(Dataset):
   def __init__(self, root_dir, transform: Callable | None = None,):
