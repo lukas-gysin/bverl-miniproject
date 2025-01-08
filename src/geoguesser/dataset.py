@@ -12,6 +12,7 @@ from sklearn.model_selection import train_test_split
 import tifffile
 import torch
 from torch.utils.data import Dataset
+from torch.utils.data import DataLoader
 from torchvision import transforms
 
 
@@ -112,7 +113,7 @@ class EuroSATDataset(Dataset):
 
       return subset
 
-class EuroSATDataloader:
+class EuroSATDataLoader:
   def __init__(self, dataset: EuroSATDataset, seed):
     self.dataset = dataset
 
