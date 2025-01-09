@@ -58,8 +58,15 @@ class EuroSATDataset(Dataset):
     if self.transform:
       image = self.transform(image)
 
-    return {"image": image, "label": label_num}
+    file, _ = os.path.splitext(os.path.basename(image_path))
+    return {"image": image, "label": label_num, "file": file}
 
+  def get(self, filename: str):
+    for idx, observation in enumerate(self.observations):
+      if os.path.splitext(os.path.basename(observation["image_path"])) == filename:
+        return self.__getitem__(idx)
+    raise ValueError(f"Observation with filename {filename} not found in the dataset.")
+  
   @classmethod
   def download(cls, dataset: Literal['RGB', 'MS'] = 'MS', download_dir: Path = Path('/workspace/code/data')):
     if dataset == 'RGB':
