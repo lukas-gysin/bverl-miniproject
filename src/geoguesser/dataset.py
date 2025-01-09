@@ -63,7 +63,8 @@ class EuroSATDataset(Dataset):
 
   def get(self, filename: str):
     for idx, observation in enumerate(self.observations):
-      if os.path.splitext(os.path.basename(observation["image_path"])) == filename:
+      file, ext = os.path.splitext(os.path.basename(observation['image_path']))
+      if file == filename:
         return self.__getitem__(idx)
     raise ValueError(f"Observation with filename {filename} not found in the dataset.")
   
