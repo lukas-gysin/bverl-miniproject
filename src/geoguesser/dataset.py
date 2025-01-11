@@ -43,15 +43,6 @@ class EuroSATDataset(Dataset):
       image = tifffile.imread(image_path)
       image = torch.tensor(image, dtype=torch.float32).permute(2, 0, 1)
 
-    # Normalize each channel
-    for channel in range(image.shape[0]):
-      channel_min = image[channel].min()
-      channel_max = image[channel].max()
-      if channel_max != channel_min:
-          image[channel] = (image[channel] - channel_min) / (channel_max - channel_min)
-      else:
-          image[channel] = torch.zeros_like(image[channel])  # Set to zero if uniform
-
     label = self.observations[idx]["label"]
     label_num = self.classes.index(label)
 
@@ -61,13 +52,16 @@ class EuroSATDataset(Dataset):
     file, _ = os.path.splitext(os.path.basename(image_path))
     return {"image": image, "label": label_num, "file": file}
 
+  def channels(self):
+    return self.__getitem__(0)['image'].size(0)
+
   def get(self, filename: str):
     for idx, observation in enumerate(self.observations):
       file, ext = os.path.splitext(os.path.basename(observation['image_path']))
       if file == filename:
         return self.__getitem__(idx)
     raise ValueError(f"Observation with filename {filename} not found in the dataset.")
-  
+
   @classmethod
   def download(cls, dataset: Literal['RGB', 'MS'] = 'MS', download_dir: Path = Path('/workspace/code/data')):
     if dataset == 'RGB':
@@ -127,10 +121,10 @@ class EuroSATDataLoader:
 
     ids = [idx for idx in range(0, len(dataset.observations))]
     labels = [observation["label"] for observation in dataset.observations]
-    
+
     self.train_ids, self.test_ids = train_test_split(ids, train_size=0.8,  random_state=seed, stratify=labels)
     self.val_ids, self.test_ids = train_test_split(self.test_ids, train_size=0.5,  random_state=seed, stratify=[labels[i] for i in self.test_ids])
-  
+
   def testing(self, transformer: Callable | None = None, batch_size: int = 16):
     dataset_test = EuroSATDataset.from_subset(self.dataset, self.test_ids, transform=transformer)
     return DataLoader(dataset_test, batch_size=batch_size, shuffle=False, num_workers=os.cpu_count())
@@ -138,7 +132,7 @@ class EuroSATDataLoader:
   def training(self, transformer: Callable | None = None, batch_size: int = 16):
     dataset_train = EuroSATDataset.from_subset(self.dataset, self.train_ids, transform=transformer)
     return DataLoader(dataset_train, batch_size=batch_size, shuffle=True, num_workers=os.cpu_count())
-  
+
   def validation(self, transformer: Callable | None = None, batch_size: int = 16):
     dataset_val = EuroSATDataset.from_subset(self.dataset, self.val_ids, transform=transformer)
     return DataLoader(dataset_val, batch_size=batch_size, shuffle=False, num_workers=os.cpu_count())
