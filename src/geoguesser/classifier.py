@@ -16,6 +16,7 @@ class Classifier(L.LightningModule):
         self.train_loss = torchmetrics.MeanMetric()
         self.val_accuracy = torchmetrics.Accuracy(task='multiclass', num_classes=n_classes)
         self.val_loss = torchmetrics.MeanMetric()
+        self.test_accuracy = torchmetrics.Accuracy(task='multiclass', num_classes=n_classes)
 
     def forward(self, x):
         return self.model(x)
@@ -60,6 +61,23 @@ class Classifier(L.LightningModule):
     def on_validation_epoch_end(self):
       self.log("val/acc_epoch", self.val_accuracy)
       self.log("val/loss_epoch", self.val_loss)
-        
+
+    def test_step(self, batch, batch_idx):
+        x, y = batch["image"], batch["label"]
+        logits = self(x)
+        loss = self.loss_fn(logits, y)
+        preds = torch.argmax(logits, dim=1)
+
+        # Update accuracy metric
+        self.test_accuracy(preds, y)
+
+        self.log("test/acc_step", self.test_accuracy)
+
+        return loss
+
+    def on_test_epoch_end(self):
+        # log epoch metric
+        self.log("test/acc_epoch", self.test_accuracy)
+
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=self.learning_rate, weight_decay=self.weight_decay)
