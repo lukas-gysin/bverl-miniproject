@@ -6,8 +6,10 @@ import torchmetrics
 
 
 class Classifier(L.LightningModule):
-    def __init__(self, model, n_classes: int = 10):
+    def __init__(self, model, n_classes: int = 10, weight_decay: float = 0.01, learning_rate:float = 0.001):
         super().__init__()
+        self.weight_decay = weight_decay
+        self.learning_rate = learning_rate
         self.model = model
         self.loss_fn = nn.CrossEntropyLoss()
         self.train_accuracy = torchmetrics.Accuracy(task='multiclass', num_classes=n_classes)
@@ -58,6 +60,6 @@ class Classifier(L.LightningModule):
     def on_validation_epoch_end(self):
       self.log("val/acc_epoch", self.val_accuracy)
       self.log("val/loss_epoch", self.val_loss)
-
+        
     def configure_optimizers(self):
-        return torch.optim.Adam(self.parameters(), lr=0.001, weight_decay=0.01)
+        return torch.optim.Adam(self.parameters(), lr=self.learning_rate, weight_decay=self.weight_decay)
