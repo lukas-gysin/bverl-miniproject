@@ -131,14 +131,14 @@ class EuroSATDataLoader:
     self.train_ids, self.test_ids = train_test_split(ids, train_size=0.8,  random_state=seed, stratify=labels)
     self.val_ids, self.test_ids = train_test_split(self.test_ids, train_size=0.5,  random_state=seed, stratify=[labels[i] for i in self.test_ids])
   
-  def testing(self, transformer: Callable | None = None):
+  def testing(self, transformer: Callable | None = None, batch_size: int = 16):
     dataset_test = EuroSATDataset.from_subset(self.dataset, self.test_ids, transform=transformer)
-    return DataLoader(dataset_test, batch_size=16, shuffle=False, num_workers=os.cpu_count())
+    return DataLoader(dataset_test, batch_size=batch_size, shuffle=False, num_workers=os.cpu_count())
 
-  def training(self, transformer: Callable | None = None):
+  def training(self, transformer: Callable | None = None, batch_size: int = 16):
     dataset_train = EuroSATDataset.from_subset(self.dataset, self.train_ids, transform=transformer)
-    return DataLoader(dataset_train, batch_size=16, shuffle=True, num_workers=os.cpu_count())
+    return DataLoader(dataset_train, batch_size=batch_size, shuffle=True, num_workers=os.cpu_count())
   
-  def validation(self, transformer: Callable | None = None):
+  def validation(self, transformer: Callable | None = None, batch_size: int = 16):
     dataset_val = EuroSATDataset.from_subset(self.dataset, self.val_ids, transform=transformer)
-    return DataLoader(dataset_val, batch_size=16, shuffle=False, num_workers=os.cpu_count())
+    return DataLoader(dataset_val, batch_size=batch_size, shuffle=False, num_workers=os.cpu_count())
